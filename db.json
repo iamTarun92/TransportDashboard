@@ -1,0 +1,154 @@
+{
+    "status": "success",
+    "sosAlert": [
+        {
+            "gpsTS": 1750843956032,
+            "empID": "65c06ed0bddb083bb883ec19",
+            "name": "Paramesh",
+            "locationName": "3rd Cross Street, Bakthavatchalam Nagar, Ward 175, Zone 13 Adyar, Chennai, Tamil Nadu, 600001, India"
+        },
+        {
+            "gpsTS": 1750843956032,
+            "empID": "65c06ed0bddb083bb883779",
+            "name": "Vignesh",
+            "locationName": "5rd Cross Street, Chennai, Tamil Nadu, 600001, India"
+        },
+        {
+            "gpsTS": 1750843956032,
+            "empID": "65c06ed0bddb083bb883779",
+            "name": "Siva",
+            "locationName": "4rd Cross Street, Bangalore, Tamil Nadu, 600001, India"
+        },
+        {
+            "gpsTS": 1750843956032,
+            "empID": "65c06ed0bddb083456883779",
+            "name": "Santhos",
+            "locationName": "9rd Cross Street, Erode, Tamil Nadu, 600001, India"
+        },
+        {
+            "gpsTS": 1750843956032,
+            "empID": "65c06ed0bddb083bb883779",
+            "name": "Guru",
+            "locationName": "6rd Cross Street,  Tamil Nadu, 600001, India"
+        },
+        {
+            "gpsTS": 1750843956032,
+            "empID": "65c06ed0bddb083bb883779",
+            "name": "Mathan",
+            "locationName": "5rd Cross Street, Chennai, Tamil Nadu, 600001, India"
+        }
+    ],
+    "vehComplianceNotifications": {
+        "TN56H1818": {
+            "insurance": "25-06-2025"
+        },
+        "TN47S2569": {
+            "insurance": "25-06-2025",
+            "routePermit": "25-06-2025"
+        },
+        "TN68S2669": {
+            "insurance": "25-06-2025",
+            "routePermit": "25-06-2025",
+            "puc": "31-07-2026"
+        },
+        "TN89S2769": {
+            "insurance": "29-06-2025",
+            "routePermit": "28-07-2025"
+        },
+        "TN11Y9876": {
+            "insurance": "01-08-2025",
+            "routePermit": "06-06-2025",
+            "puc": "08-09-2025"
+        },
+        "TN45G4567": {
+            "insurance": "31-07-2025",
+            "routePermit": "21-09-2025"
+        }
+    },
+    "drComplianceNotifications": {
+        "Santhos": {
+            "licenceExpiry": "25-06-2025"
+        },
+        "Mathan": {
+            "licenceExpiry": "31-08-2025"
+        },
+        "Siva": {
+            "licenceExpiry": "21-10-2025"
+        },
+        "Guru": {
+            "licenceExpiry": "28-09-2025"
+        },
+        "Rahmathula": {
+            "licenceExpiry": "11-11-2025"
+        },
+        "Paramesh": {
+            "licenceExpiry": "10-10-2025"
+        }
+    },
+    "onTimeArrivalRatio": {
+        "Hyderabad": {
+            "OnTime": 2,
+            "Delay": 3,
+            "Total": 5
+        },
+        "Chennai": {
+            "OnTime": 5,
+            "Delay": 1,
+            "Total": 6
+        },
+        "Bangalore": {
+            "OnTime": 4,
+            "Delay": 3,
+            "Total": 7
+        },
+        "Mysore": {
+            "OnTime": 6,
+            "Delay": 5,
+            "Total": 11
+        },
+        "Kerala": {
+            "OnTime": 7,
+            "Delay": 8,
+            "Total": 15
+        },
+        "Madurai": {
+            "OnTime": 12,
+            "Delay": 5,
+            "Total": 17
+        }
+    },
+    "gender": {
+        "Hyderabad": {
+            "male": 6,
+            "female": 2
+        },
+        "Chennai": {
+            "male": 1,
+            "female": 0
+        },
+        "Bangalore": {
+            "male": 1,
+            "female": 0
+        },
+        "Mysore": {
+            "male": 5,
+            "female": 8
+        },
+        "Kerala": {
+            "male": 4,
+            "female": 5
+        },
+        "Madurai": {
+            "male": 8,
+            "female": 10
+        }
+    },
+    "occupancyUtilization": {
+        "Chennai": 75,
+        "Bangalore": 60,
+        "Hyderabad": 40,
+        "Madurai": 40,
+        "Kerala": 40,
+        "Mysore": 40
+    }
+}
