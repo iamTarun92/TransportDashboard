@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 
 @NgModule({
@@ -15,9 +16,10 @@ import { FormsModule } from '@angular/forms';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    BaseChartDirective,
   ],
-  providers: [],
+  providers: [provideCharts(withDefaultRegisterables())],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

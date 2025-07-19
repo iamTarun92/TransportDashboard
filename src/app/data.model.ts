@@ -11,12 +11,3 @@ export interface SosAlert {
     name: string
     locationName: string
 }
-
-export interface OccupancyUtilization {
-    Chennai: number
-    Bangalore: number
-    Hyderabad: number
-    Madurai: number
-    Kerala: number
-    Mysore: number
-}

@@ -1,58 +1,84 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { ApiService } from './services/api.service';
-import { Chart, registerables } from 'chart.js';
-import { cancelledTripsChart, genderShiftChart, ontimeChart, scheduledTripsChart, tripTrendChart, vendorTripsChart } from './chartData';
+import { Component, OnInit } from '@angular/core';
+import { cancelledTripsChart, genderShiftChart, occupancyChart, ontimeChart, scheduledTripsChart, tripTrendChart, vendorTripsChart } from './chartData';
 import { ChartType, SosAlert } from './data.model';
-Chart.register(...registerables);
+import { DataService } from './services/data.service';
+// Chart.register(...registerables);
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   title = 'TransportDashboard';
   fromDate: string = '';
   toDate: string = '';
   selectedLocation: string = 'All';
   sosAlertsData: SosAlert[] = [];
+  vehCompliance: any[] = [];
+  locationList: string[] = [];
+
+
+
+  // Chart data properties
+  ontimeChartData!: ChartType
   occupancyChartData!: ChartType
+  tripTrendChartData!: ChartType
+  scheduledTripsChartData!: ChartType
+  cancelledTripsChartData!: ChartType
+  vendorTripsChartData!: ChartType
+  genderShiftChartData!: ChartType
 
-  constructor(private dataService: ApiService) { }
+  constructor(private dataService: DataService) { }
 
-  ngAfterViewInit() {
-    this.renderChart('ontime', 'radar', ontimeChart);
-    this.renderChart('tripTrend', 'line', tripTrendChart);
-    this.renderChart('scheduledTrips', 'bar', scheduledTripsChart);
-    this.renderChart('cancelledTrips', 'bar', cancelledTripsChart);
-    this.renderChart('vendorTrips', 'doughnut', vendorTripsChart);
-    this.renderChart('genderShift', 'bar', genderShiftChart);
+  ngOnInit(): void {
+    this._fetchData();
+    this.loadData()
   }
 
-  ngOnInit() {
-    this.dataService.getChartData().subscribe((data) => {
+  loadData() {
+    this.dataService.getData().subscribe((data) => {
       this.sosAlertsData = data.sosAlert;
-
+      // Extract location keys from onTimeArrivalRatio
+      this.locationList = Object.keys(data.onTimeArrivalRatio);
       this.occupancyChartData = {
         labels: Object.keys(data.occupancyUtilization),
         datasets: [{
           data: Object.values(data.occupancyUtilization),
         }]
       };
-
-      // Render the occupancy chart after data is set
-      this.renderChart('occupancy', 'polarArea', this.occupancyChartData);
+      // Convert vehComplianceNotifications object to array
+      this.vehCompliance = Object.entries(data.vehComplianceNotifications).map(([vehNum, compliance]: any) => {
+        return {
+          vehicle: vehNum,
+          insurance: compliance.insurance || '-',
+          routePermit: compliance.routePermit || '-',
+          puc: compliance.puc || '-',
+          insuranceExpired: this.checkExpiry(compliance.insurance),
+          routePermitExpired: this.checkExpiry(compliance.routePermit),
+          pucExpired: this.checkExpiry(compliance.puc),
+        };
+      });
     });
   }
 
+  private _fetchData() {
+    this.ontimeChartData = ontimeChart;
+    this.occupancyChartData = occupancyChart
+    this.tripTrendChartData = tripTrendChart;
+    this.scheduledTripsChartData = scheduledTripsChart;
+    this.cancelledTripsChartData = cancelledTripsChart;
+    this.vendorTripsChartData = vendorTripsChart;
+    this.genderShiftChartData = genderShiftChart;
+  }
 
-  renderChart(element: string, chartType: any, data: any) {
-    new Chart(element, {
-      type: chartType,
-      data: {
-        labels: data?.labels,
-        datasets: data?.datasets
-      },
-      options: data?.options
-    });
+  private checkExpiry(dateStr: string | undefined): boolean {
+    const today = new Date();
+    if (!dateStr) return false;
+    const d = new Date(dateStr.split('-').reverse().join('-')); // Convert DD-MM-YYYY to YYYY-MM-DD
+    return d < today;
+  }
+
+  onFilterChange(fromDate: string, toDate: string, location: string): void {
+    console.log(`Filter changed: From ${fromDate}, To ${toDate}, Location ${location}`);
   }
 }

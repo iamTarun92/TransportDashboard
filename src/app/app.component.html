@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container my-4">
   <div class="row">
     <div class="col-12">
       <h1>Transport Dashboard</h1>
@@ -9,12 +9,18 @@
         <label>
           Location:
           <select [(ngModel)]="selectedLocation">
-            <option>All</option>
-            <option>Chennai</option>
-            <option>Hyderabad</option>
-            <option>Bangalore</option>
+            <option value="All" selected>All</option>
+            <option *ngFor="let location of locationList" [value]="location">
+              {{ location }}
+            </option>
           </select>
         </label>
+        <button
+          (click)="onFilterChange(fromDate, toDate, selectedLocation)"
+          class="btn btn-outline-primary"
+        >
+          Apply Filters
+        </button>
       </div>
 
       <div class="dashboard">
@@ -31,39 +37,96 @@
         <div class="card">
           <h2>Compliance Notifications</h2>
           <ul class="alert-box">
-            <li>Vehicle TN01XX3345 – Insurance expired<br /></li>
-            <li>Driver 104 – License expiring in 7 days<br /></li>
-            <li>Vehicle AP28YZ1234 – Pollution check overdue</li>
+            <li *ngFor="let item of vehCompliance">
+              Vehicle {{ item.vehicle }} Insurance is
+              {{ item.insuranceExpired ? "expired" : "valid" }}.
+            </li>
           </ul>
         </div>
 
         <div class="card">
           <h2>On-Time Arrival Ratio</h2>
-          <canvas id="ontime"></canvas>
+          <canvas
+            baseChart
+            height="300"
+            [datasets]="ontimeChartData.datasets"
+            [labels]="ontimeChartData.labels"
+            [options]="ontimeChartData.options"
+            [type]="'radar'"
+          >
+          </canvas>
         </div>
         <div class="card">
           <h2>Occupancy Utilization</h2>
-          <canvas id="occupancy"></canvas>
+          <canvas
+            baseChart
+            height="300"
+            [datasets]="occupancyChartData.datasets"
+            [labels]="occupancyChartData.labels"
+            [options]="occupancyChartData.options"
+            [type]="'polarArea'"
+          >
+          </canvas>
         </div>
         <div class="card">
           <h2>Trip Count Trend</h2>
-          <canvas id="tripTrend"></canvas>
+          <canvas
+            baseChart
+            height="300"
+            [datasets]="tripTrendChartData.datasets"
+            [labels]="tripTrendChartData.labels"
+            [options]="tripTrendChartData.options"
+            [type]="'line'"
+          >
+          </canvas>
         </div>
         <div class="card">
           <h2>Scheduled Trips (by Branch)</h2>
-          <canvas id="scheduledTrips"></canvas>
+          <canvas
+            baseChart
+            height="300"
+            [datasets]="scheduledTripsChartData.datasets"
+            [labels]="scheduledTripsChartData.labels"
+            [options]="scheduledTripsChartData.options"
+            [type]="'bar'"
+          >
+          </canvas>
         </div>
         <div class="card">
           <h2>Cancelled Trips (by Branch)</h2>
-          <canvas id="cancelledTrips"></canvas>
+          <canvas
+            baseChart
+            height="300"
+            [datasets]="cancelledTripsChartData.datasets"
+            [labels]="cancelledTripsChartData.labels"
+            [options]="cancelledTripsChartData.options"
+            [type]="'bar'"
+          >
+          </canvas>
         </div>
         <div class="card">
           <h2>Vendor Trip Distribution</h2>
-          <canvas id="vendorTrips"></canvas>
+          <canvas
+            baseChart
+            height="300"
+            [datasets]="vendorTripsChartData.datasets"
+            [labels]="vendorTripsChartData.labels"
+            [options]="vendorTripsChartData.options"
+            [type]="'doughnut'"
+          >
+          </canvas>
         </div>
         <div class="card">
           <h2>Gender + Shift Mix</h2>
-          <canvas id="genderShift"></canvas>
+          <canvas
+            baseChart
+            height="300"
+            [datasets]="genderShiftChartData.datasets"
+            [labels]="genderShiftChartData.labels"
+            [options]="genderShiftChartData.options"
+            [type]="'bar'"
+          >
+          </canvas>
         </div>
       </div>
     </div>
