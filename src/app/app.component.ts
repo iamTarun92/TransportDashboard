@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { cancelledTripsChart, genderShiftChart, occupancyChart, ontimeChart, scheduledTripsChart, tripTrendChart, vendorTripsChart } from './chartData';
-import { ChartType, SosAlert } from './data.model';
+import { ChartType, OccupancyUtilization, OnTimeArrivalRatio, Root, SosAlert } from './data.model';
 import { DataService } from './services/data.service';
 // Chart.register(...registerables);
 @Component({
@@ -16,8 +16,6 @@ export class AppComponent implements OnInit {
   sosAlertsData: SosAlert[] = [];
   vehCompliance: any[] = [];
   locationList: string[] = [];
-
-
 
   // Chart data properties
   ontimeChartData!: ChartType
@@ -36,28 +34,12 @@ export class AppComponent implements OnInit {
   }
 
   loadData() {
-    this.dataService.getData().subscribe((data) => {
+    this.dataService.getData().subscribe((data: Root) => {
       this.sosAlertsData = data.sosAlert;
-      // Extract location keys from onTimeArrivalRatio
-      this.locationList = Object.keys(data.onTimeArrivalRatio);
-      this.occupancyChartData = {
-        labels: Object.keys(data.occupancyUtilization),
-        datasets: [{
-          data: Object.values(data.occupancyUtilization),
-        }]
-      };
-      // Convert vehComplianceNotifications object to array
-      this.vehCompliance = Object.entries(data.vehComplianceNotifications).map(([vehNum, compliance]: any) => {
-        return {
-          vehicle: vehNum,
-          insurance: compliance.insurance || '-',
-          routePermit: compliance.routePermit || '-',
-          puc: compliance.puc || '-',
-          insuranceExpired: this.checkExpiry(compliance.insurance),
-          routePermitExpired: this.checkExpiry(compliance.routePermit),
-          pucExpired: this.checkExpiry(compliance.puc),
-        };
-      });
+      this._setLocationList(data.onTimeArrivalRatio);
+      this._setVehCompliance(data.vehComplianceNotifications);
+      this._setOntimeChartData(data.onTimeArrivalRatio);
+      this._setOccupancyChartData(data.occupancyUtilization);
     });
   }
 
@@ -71,7 +53,7 @@ export class AppComponent implements OnInit {
     this.genderShiftChartData = genderShiftChart;
   }
 
-  private checkExpiry(dateStr: string | undefined): boolean {
+  private _checkExpiry(dateStr: string | undefined): boolean {
     const today = new Date();
     if (!dateStr) return false;
     const d = new Date(dateStr.split('-').reverse().join('-')); // Convert DD-MM-YYYY to YYYY-MM-DD
@@ -80,5 +62,49 @@ export class AppComponent implements OnInit {
 
   onFilterChange(fromDate: string, toDate: string, location: string): void {
     console.log(`Filter changed: From ${fromDate}, To ${toDate}, Location ${location}`);
+  }
+
+  private _setLocationList(data: OnTimeArrivalRatio): void {
+    this.locationList = Object.keys(data);
+  }
+
+  private _setVehCompliance(data: any): void {
+    this.vehCompliance = Object.entries(data).map(([vehNum, compliance]: any) => {
+      return {
+        vehicle: vehNum,
+        insurance: compliance.insurance || '-',
+        routePermit: compliance.routePermit || '-',
+        puc: compliance.puc || '-',
+        insuranceExpired: this._checkExpiry(compliance.insurance),
+        routePermitExpired: this._checkExpiry(compliance.routePermit),
+        pucExpired: this._checkExpiry(compliance.puc),
+      };
+    });
+  }
+
+  private _setOntimeChartData(data: OnTimeArrivalRatio): void {
+    const branches = Object.keys(data) as (keyof OnTimeArrivalRatio)[];
+    const onTimePercentages = branches.map(branch => {
+      const currentData = data[branch];
+      return ((currentData.OnTime / currentData.Total) * 100).toFixed(2);
+    });
+
+    this.ontimeChartData = {
+      labels: branches,
+      datasets: [{
+        label: 'On Time Arrival Ratio',
+        data: onTimePercentages,
+        backgroundColor: '#2ecc71'
+      }]
+    };
+  }
+
+  private _setOccupancyChartData(data: OccupancyUtilization): void {
+    this.occupancyChartData = {
+      labels: Object.keys(data),
+      datasets: [{
+        data: Object.values(data),
+      }]
+    };
   }
 }

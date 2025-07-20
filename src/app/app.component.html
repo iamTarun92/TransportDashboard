@@ -47,6 +47,7 @@
         <div class="card">
           <h2>On-Time Arrival Ratio</h2>
           <canvas
+            *ngIf="ontimeChartData"
             baseChart
             height="300"
             [datasets]="ontimeChartData.datasets"
@@ -59,6 +60,7 @@
         <div class="card">
           <h2>Occupancy Utilization</h2>
           <canvas
+            *ngIf="occupancyChartData"
             baseChart
             height="300"
             [datasets]="occupancyChartData.datasets"
@@ -71,6 +73,7 @@
         <div class="card">
           <h2>Trip Count Trend</h2>
           <canvas
+            *ngIf="tripTrendChartData"
             baseChart
             height="300"
             [datasets]="tripTrendChartData.datasets"
@@ -83,6 +86,7 @@
         <div class="card">
           <h2>Scheduled Trips (by Branch)</h2>
           <canvas
+            *ngIf="scheduledTripsChartData"
             baseChart
             height="300"
             [datasets]="scheduledTripsChartData.datasets"
@@ -95,6 +99,7 @@
         <div class="card">
           <h2>Cancelled Trips (by Branch)</h2>
           <canvas
+            *ngIf="cancelledTripsChartData"
             baseChart
             height="300"
             [datasets]="cancelledTripsChartData.datasets"
@@ -107,6 +112,7 @@
         <div class="card">
           <h2>Vendor Trip Distribution</h2>
           <canvas
+            *ngIf="vendorTripsChartData"
             baseChart
             height="300"
             [datasets]="vendorTripsChartData.datasets"
@@ -119,6 +125,7 @@
         <div class="card">
           <h2>Gender + Shift Mix</h2>
           <canvas
+            *ngIf="genderShiftChartData"
             baseChart
             height="300"
             [datasets]="genderShiftChartData.datasets"
