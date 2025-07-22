@@ -4,7 +4,7 @@
       <h1>Transport Dashboard</h1>
 
       <div class="filters">
-        <label> From: <input type="date" [(ngModel)]="fromDate" /> </label>
+        <label> From:<input type="date" [(ngModel)]="fromDate" /> </label>
         <label> To: <input type="date" [(ngModel)]="toDate" /> </label>
         <label>
           Location:
@@ -15,33 +15,50 @@
             </option>
           </select>
         </label>
-        <button
-          (click)="onFilterChange(fromDate, toDate, selectedLocation)"
-          class="btn btn-outline-primary"
-        >
+        <button (click)="applyFilters()" class="btn btn-outline-primary">
           Apply Filters
+        </button>
+        <button (click)="clearFilters()" class="btn btn-outline-primary">
+          Clear All
         </button>
       </div>
 
       <div class="dashboard">
         <div class="card">
           <h2>SOS Alerts</h2>
-          <ul class="alert-box">
+          <ul class="alert-box" *ngIf="sosAlertsData.length; else noData">
             <li *ngFor="let item of sosAlertsData">
               {{ item.gpsTS | date : "d MMMM" }} : {{ item.locationName }} -
               <strong>{{ item.name }}</strong>
             </li>
           </ul>
+          <ng-template #noData>
+            <p>No documents found for the selected date range.</p>
+          </ng-template>
         </div>
 
         <div class="card">
           <h2>Compliance Notifications</h2>
-          <ul class="alert-box">
-            <li *ngFor="let item of vehCompliance">
-              Vehicle {{ item.vehicle }} Insurance is
-              {{ item.insuranceExpired ? "expired" : "valid" }}.
+          <ul
+            class="alert-box"
+            *ngIf="vehComplianceNotificationsData.length; else noData"
+          >
+            <li *ngFor="let item of vehComplianceNotificationsData">
+              <strong>{{ item.vehicle }}</strong>
+              <ul>
+                <li *ngIf="item.insurance != '-'">
+                  Insurance is {{ item.insuranceExpired }}.
+                </li>
+                <li *ngIf="item.routePermit != '-'">
+                  Route Permit is {{ item.routePermitExpired }}.
+                </li>
+                <li *ngIf="item.puc != '-'">PUC is {{ item.pucExpired }}.</li>
+              </ul>
             </li>
           </ul>
+          <ng-template #noData>
+            <p>No documents found for the selected date range.</p>
+          </ng-template>
         </div>
 
         <div class="card">

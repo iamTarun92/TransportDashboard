@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { cancelledTripsChart, genderShiftChart, occupancyChart, ontimeChart, scheduledTripsChart, tripTrendChart, vendorTripsChart } from './chartData';
-import { ChartType, OccupancyUtilization, OnTimeArrivalRatio, Root, SosAlert } from './data.model';
+import { ChartType, OccupancyUtilization, OnTimeArrivalRatio, Root, SosAlert, VehComplianceNotifications } from './data.model';
 import { DataService } from './services/data.service';
 // Chart.register(...registerables);
 @Component({
@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   toDate: string = '';
   selectedLocation: string = 'All';
   sosAlertsData: SosAlert[] = [];
-  vehCompliance: any[] = [];
+  vehComplianceNotificationsData: VehComplianceNotifications[] = [];
   locationList: string[] = [];
 
   // Chart data properties
@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   cancelledTripsChartData!: ChartType
   vendorTripsChartData!: ChartType
   genderShiftChartData!: ChartType
+  rowJsonData: Root | undefined
 
   constructor(private dataService: DataService) { }
 
@@ -35,17 +36,16 @@ export class AppComponent implements OnInit {
 
   loadData() {
     this.dataService.getData().subscribe((data: Root) => {
+      this.rowJsonData = data;
       this.sosAlertsData = data.sosAlert;
-      this._setLocationList(data.onTimeArrivalRatio);
-      this._setVehCompliance(data.vehComplianceNotifications);
+      this.locationList = this._setLocationList(data.onTimeArrivalRatio);
+      this.vehComplianceNotificationsData = this._setVehCompliance(data.vehComplianceNotifications);
       this._setOntimeChartData(data.onTimeArrivalRatio);
       this._setOccupancyChartData(data.occupancyUtilization);
     });
   }
 
   private _fetchData() {
-    this.ontimeChartData = ontimeChart;
-    this.occupancyChartData = occupancyChart
     this.tripTrendChartData = tripTrendChart;
     this.scheduledTripsChartData = scheduledTripsChart;
     this.cancelledTripsChartData = cancelledTripsChart;
@@ -60,24 +60,20 @@ export class AppComponent implements OnInit {
     return d < today;
   }
 
-  onFilterChange(fromDate: string, toDate: string, location: string): void {
-    console.log(`Filter changed: From ${fromDate}, To ${toDate}, Location ${location}`);
+  private _setLocationList(data: OnTimeArrivalRatio): string[] {
+    return this.locationList = Object.keys(data);
   }
 
-  private _setLocationList(data: OnTimeArrivalRatio): void {
-    this.locationList = Object.keys(data);
-  }
-
-  private _setVehCompliance(data: any): void {
-    this.vehCompliance = Object.entries(data).map(([vehNum, compliance]: any) => {
+  private _setVehCompliance(data: any): VehComplianceNotifications[] {
+    return Object.entries(data).map(([vehNum, compliance]: any) => {
       return {
         vehicle: vehNum,
         insurance: compliance.insurance || '-',
         routePermit: compliance.routePermit || '-',
         puc: compliance.puc || '-',
-        insuranceExpired: this._checkExpiry(compliance.insurance),
-        routePermitExpired: this._checkExpiry(compliance.routePermit),
-        pucExpired: this._checkExpiry(compliance.puc),
+        insuranceExpired: this._checkExpiry(compliance.insurance) ? 'expired' : 'valid',
+        routePermitExpired: this._checkExpiry(compliance.routePermit) ? 'expired' : 'valid',
+        pucExpired: this._checkExpiry(compliance.puc) ? 'expired' : 'valid',
       };
     });
   }
@@ -106,5 +102,44 @@ export class AppComponent implements OnInit {
         data: Object.values(data),
       }]
     };
+  }
+
+  private _filterByDateRange(from: string, to: string): void {
+    const start = new Date(from);
+    const end = new Date(to);
+
+    this.sosAlertsData = (this.rowJsonData?.sosAlert ?? []).filter((entry: any) =>
+      entry.gpsTS >= new Date(this.fromDate).getTime() && entry.gpsTS <= new Date(this.toDate).getTime()
+    );
+
+    this._setVehCompliance(this.rowJsonData?.vehComplianceNotifications || {});
+    this.vehComplianceNotificationsData = this._setVehCompliance(this.rowJsonData?.vehComplianceNotifications ?? []).filter((vehicle: any) => {
+      const insuranceDate = this._convertToISO(vehicle.insurance);
+      const routePermitDate = this._convertToISO(vehicle.routePermit);
+      const pucDate = this._convertToISO(vehicle.puc);
+
+      return (
+        (insuranceDate && insuranceDate >= start && insuranceDate <= end) ||
+        (routePermitDate && routePermitDate >= start && routePermitDate <= end) ||
+        (pucDate && pucDate >= start && pucDate <= end)
+      );
+    });
+  }
+
+  private _convertToISO(dateStr: string): Date | null {
+    if (!dateStr || dateStr.trim() === '-' || !dateStr.includes('-')) return null;
+    const [day, month, year] = dateStr.split('-');
+    return new Date(`${year}-${month}-${day}`);
+  }
+
+  applyFilters() {
+    this._filterByDateRange(this.fromDate, this.toDate);
+  }
+
+  clearFilters() {
+    this.fromDate = '';
+    this.toDate = '';
+    this.selectedLocation = 'All';
+    this.loadData();
   }
 }

@@ -64,3 +64,13 @@ export interface OccupancyUtilization {
     Kerala: number
     Mysore: number
 }
+
+export interface VehComplianceNotifications {
+    vehicle: string
+    insurance: string
+    routePermit: string
+    puc: string
+    insuranceExpired: string
+    routePermitExpired: string
+    pucExpired: string
+}
